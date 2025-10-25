@@ -1,90 +1,109 @@
-# Tech Stack Document
+# Tech Stack Document - Codeguide Starter Fullstack
 
-This document explains the key technologies chosen for the **codeguide-starter** project. It’s written in everyday language so anyone—technical or not—can understand why each tool was picked and how it supports the application.
+## Frontend Technologies
 
-## 1. Frontend Technologies
-The frontend is everything the user sees and interacts with. For this project, we’ve used:
+We chose a modern, component-driven approach to build a fast and accessible user interface. Here’s what we use:
 
 - **Next.js (App Router)**
-  - A React framework that makes page routing, server-side rendering, and API routes very simple.
-  - Enhances user experience by pre-rendering pages on the server or at build time, leading to faster initial load.
-- **React 18**
-  - The underlying library for building user interfaces with reusable components.
-  - Provides a smooth, interactive experience thanks to its virtual DOM and modern hooks.
-- **TypeScript**
-  - A superset of JavaScript that adds types (labels for data).
-  - Helps catch errors early during development and makes the code easier to maintain.
-- **CSS (globals.css & theme.css)**
-  - **globals.css** applies base styles (fonts, colors, resets) across the entire app.
-  - **dashboard/theme.css** defines the look and feel specific to the dashboard area.
-  - This separation keeps styles organized and avoids accidental style conflicts.
+  - Enables server-side rendering and seamless page routing.
+  - Provides built-in API routes to simplify server logic alongside your frontend.
+- **React with TypeScript**
+  - Ensures a type-safe codebase, reducing errors when handling complex data like wedding templates.
+  - Offers a rich ecosystem of reusable components.
+- **shadcn/ui**
+  - A library of accessible React components (buttons, forms, tables, etc.).
+  - Speeds up UI development so you can focus on business logic, not styling every element from scratch.
+- **Tailwind CSS v4**
+  - A utility-first CSS framework that lets you style components with simple class names.
+  - Promotes rapid iteration and consistent design without writing custom CSS files.
+- **Theming & Dark Mode**
+  - Built with CSS variables, so switching between light and dark modes is effortless.
+  - Allows easy brand customization to match any wedding theme.
 
-By combining these tools, we have a clear structure (Next.js folders for pages and layouts), safer code (TypeScript), and flexible styling with vanilla CSS.
+These choices combine to deliver a snappy, responsive dashboard that looks great on both desktop and mobile devices.
 
-## 2. Backend Technologies
-The backend handles data, user accounts, and the logic behind the scenes. Our choices here are:
+## Backend Technologies
+
+The backend is designed to handle data storage, authentication, and business logic securely and efficiently:
 
 - **Next.js API Routes**
-  - Allows us to write server-side code (`route.ts` files) alongside our frontend in the same project.
-  - Runs on Node.js, so we can handle requests like sign-up, sign-in, and data fetching in one place.
-- **Node.js Runtime**
-  - The JavaScript environment on the server that executes our API routes.
-- **bcrypt** (npm package)
-  - A library for hashing passwords securely before storing them.
-  - Ensures that even if someone got access to our data, raw passwords aren’t visible.
-- **(Optional) NextAuth.js or JWT**
-  - While this starter kit shows a custom authentication flow, it can easily integrate services like NextAuth.js for email-based login or JWT (JSON Web Tokens) for stateless sessions.
+  - Host server-side code right alongside your frontend pages.
+  - Simplifies deployment since the same framework powers both client and server.
+- **Node.js / V8 JavaScript Engine**
+  - Provides a scalable, non-blocking runtime for handling multiple requests.
+- **PostgreSQL**
+  - A powerful relational database for storing users, roles, wedding templates, and related data.
+  - Handles complex queries and relationships without sacrificing performance.
+- **Drizzle ORM**
+  - A type-safe ORM for Node.js and TypeScript.
+  - Simplifies database interactions, migrations, and helps avoid common SQL mistakes.
+- **Better Auth**
+  - Manages user sign-up, sign-in, session handling, and password resets.
+  - Easily extended with role-based logic to support both “admin” and “user” accounts.
+- **Zod (Optional for Validation)**
+  - Validates incoming data shapes for your API endpoints.
+  - Ensures that only correctly structured data reaches your database.
 
-These components work together to receive user credentials, verify or store them securely, manage sessions or tokens, and deliver protected data back to the frontend.
+Together, these technologies form a robust foundation for CRUD operations, role-based access control, and reliable data persistence.
 
-## 3. Infrastructure and Deployment
-Infrastructure covers where and how we host the app, as well as how changes get delivered:
+## Infrastructure and Deployment
 
-- **Git & GitHub**
-  - Version control system (Git) and remote hosting (GitHub) keep track of all code changes and allow team collaboration.
-- **Vercel (or Netlify)**
-  - A popular hosting service optimized for Next.js, with one-click deployments and global content delivery.
-  - Automatically rebuilds and deploys the site whenever code is pushed to the main branch.
-- **GitHub Actions (CI/CD)**
-  - Automates tasks like linting (ESLint), formatting (Prettier), and running any tests you add.
-  - Ensures that only clean, tested code goes live.
+We picked tools that make development, collaboration, and deployment smooth and repeatable:
 
-Together, these tools provide a reliable, scalable setup where every code change is tested and deployed quickly, with minimal manual work.
+- **Version Control: Git & GitHub**
+  - Tracks changes, enables pull requests, and simplifies code reviews.
+- **CI/CD: GitHub Actions**
+  - Automatically runs tests and linting on each commit.
+  - Deploys your application to your hosting platform when changes are merged to the main branch.
+- **Containerization: Docker**
+  - Defines a local development environment with `docker-compose` for PostgreSQL.
+  - Ensures every team member and CI runner uses the same setup.
+- **Hosting Platform: Vercel (Recommended)**
+  - Optimized for Next.js deployments with built-in support for serverless functions (API routes).
+  - Automatic SSL, global CDN, and instant rollbacks.
+  - Alternatively, you can deploy to other Node.js hosts or container services (AWS, DigitalOcean, etc.).
 
-## 4. Third-Party Integrations
-While this starter kit is minimal by design, it already includes or can easily add:
+This setup guarantees consistent environments, fast feedback loops, and reliable deployments.
 
-- **bcrypt**
-  - For secure password hashing (included as an npm dependency).
-- **NextAuth.js** (optional)
-  - A full-featured authentication library supporting email/password, OAuth, and more.
-- **Sentry or LogRocket** (optional)
-  - For real-time error tracking and performance monitoring in production.
+## Third-Party Integrations
 
-These integrations help extend the app’s capabilities without building every feature from scratch.
+To avoid rebuilding common services, we integrate trusted external tools:
 
-## 5. Security and Performance Considerations
-We’ve baked in several measures to keep users safe and the app running smoothly:
+- **Better Auth**
+  - Handles authentication flows (sign-up, sign-in, session management).
+  - Eases the implementation of role-based access control.
+- **drizzle-orm/postgres**
+  - Connects Drizzle ORM to PostgreSQL for seamless data management.
+- **Zod**
+  - Validates request payloads and API responses, ensuring data integrity.
+- **shadcn/ui**
+  - Provides pre-built, accessible components (modals, tables, forms).
 
-Security:
-- Passwords are never stored in plain text—bcrypt hashes them with a random salt.
-- API routes can implement CSRF protection and input validation to block malicious requests.
-- Session tokens or cookies are marked secure and HttpOnly to prevent theft via JavaScript.
+These services let us focus on unique wedding CMS features rather than reinventing authentication or form validation.
 
-Performance:
-- Server-side rendering (SSR) and static site generation (SSG) in Next.js deliver pages faster.
-- Code splitting and lazy-loaded components ensure users only download what they need.
-- Global CSS and theme files are small and cached by the browser for quick repeat visits.
+## Security and Performance Considerations
 
-These strategies work together to give users a fast, secure experience every time.
+We’ve built-in several measures to protect user data and keep the app responsive:
 
-## 6. Conclusion and Overall Tech Stack Summary
-In building **codeguide-starter**, we chose technologies that:
+- **Authentication & Authorization**
+  - All protected pages and API routes check for a valid session via `Better Auth`.
+  - Middleware enforces role checks (e.g., only admins can call certain CRUD endpoints).
+- **Data Validation**
+  - Incoming API requests are validated with Zod schemas to block malformed or malicious input.
+- **Type Safety**
+  - TypeScript and Drizzle ORM reduce runtime errors by catching issues at compile time.
+- **Server-Side Rendering & Caching**
+  - Next.js server-side rendering delivers fully formed HTML to the browser, improving perceived load times and SEO.
+  - Static assets and API routes are cached at the edge when possible (via Vercel’s CDN).
+- **Environment Variables & Secrets**
+  - Credentials (database URL, auth secrets) are stored securely in environment variables, never checked into code.
 
-- Align with modern web standards (Next.js, React, TypeScript).
-- Provide a clear, file-based project structure for rapid onboarding.
-- Offer built-in support for server-side rendering, API routes, and static assets.
-- Emphasize security through password hashing, session management, and safe defaults.
-- Enable easy scaling and future enhancements via modular code and optional integrations.
+## Conclusion and Overall Tech Stack Summary
 
-This stack strikes a balance between simplicity for newcomers and flexibility for experienced teams. It accelerates development of a secure authentication flow and a polished dashboard, while leaving room to plug in databases, test suites, and advanced features as the project grows.
+This full-stack template uses industry-standard tools to jumpstart the development of a wedding CMS with multi-role capabilities. By combining:
+
+- A **Next.js + React + TypeScript** frontend with **Tailwind CSS** and **shadcn/ui** for rapid, accessible UI development.
+- A **Next.js API**–driven backend leveraging **PostgreSQL**, **Drizzle ORM**, and **Better Auth** for secure data management and authentication.
+- **Docker**, **GitHub Actions**, and **Vercel** for consistent local environments, automated testing, and easy deployments.
+
+we deliver a scalable, maintainable foundation. This stack aligns perfectly with the project goals: providing a polished, role-based dashboard and CMS that wedding planners and end users can rely on. Its modular design and comprehensive documentation let you focus on building custom wedding template features instead of reinventing core infrastructure.

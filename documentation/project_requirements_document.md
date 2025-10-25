@@ -1,117 +1,101 @@
-# Project Requirements Document: codeguide-starter
-
----
+# Project Requirements Document (PRD)
 
 ## 1. Project Overview
 
-The **codeguide-starter** project is a boilerplate web application that provides a ready-made foundation for any web project requiring secure user authentication and a post-login dashboard. It sets up the common building blocks—sign-up and sign-in pages, API routes to handle registration and login, and a simple dashboard interface driven by static data. By delivering this skeleton, it accelerates development time and ensures best practices are in place from day one.
+"Wedding CMS Dashboard" is a full-stack web application starter template built on the *Codeguide Starter Fullstack* foundation. Its primary goal is to speed up the creation of a wedding template content management system (CMS) by providing pre-configured authentication, theming, database integration, and a protected dashboard. Instead of reinventing the wheel, developers can immediately focus on wedding-specific features: multi-role access (admin vs. user), CRUD operations for wedding templates, and a polished, responsive UI.
 
-This starter kit is being built to solve the friction developers face when setting up repeated common tasks: credential handling, session management, page routing, and theming. Key objectives include: 1) delivering a fully working authentication flow (registration & login), 2) providing a gated dashboard area upon successful login, 3) establishing a clear, maintainable project structure using Next.js and TypeScript, and 4) demonstrating a clean theming approach with global and section-specific CSS. Success is measured by having an end-to-end login journey in under 200 lines of code and zero runtime type errors.
-
----
+The core problem it solves is the overhead of setting up common infrastructure—auth, routing, ORM, UI components, and Docker—for any modern web project. By delivering a battle-tested scaffold, it reduces time to market, ensures best practices (TypeScript type safety, secure session handling, responsive design), and sets clear success criteria: working role-based auth; an admin panel to manage templates and users; a user interface for couples to edit their personal wedding page; consistent theming; and reliable data persistence in PostgreSQL.
 
 ## 2. In-Scope vs. Out-of-Scope
 
-### In-Scope (Version 1)
-- User registration (sign-up) form with validation
-- User login (sign-in) form with validation
-- Next.js API routes under `/api/auth/route.ts` handling:
-  - Credential validation
-  - Password hashing (e.g., bcrypt)
-  - Session creation or JWT issuance
-- Protected dashboard pages under `/dashboard`:
-  - `layout.tsx` wrapping dashboard content
-  - `page.tsx` rendering static data from `data.json`
-- Global application layout in `/app/layout.tsx`
-- Basic styling via `globals.css` and `dashboard/theme.css`
-- TypeScript strict mode enabled
+**In-Scope (Version 1.0)**
 
-### Out-of-Scope (Later Phases)
-- Integration with a real database (PostgreSQL, MongoDB, etc.)
-- Advanced authentication flows (password reset, email verification, MFA)
-- Role-based access control (RBAC)
-- Multi-tenant or white-label theming
-- Unit, integration, or end-to-end testing suites
-- CI/CD pipeline and production deployment scripts
+*   Role-Based Authentication & Authorization (ADMIN / USER) via Better Auth
+*   Protected Dashboard (`/dashboard`) with sidebar navigation
+*   CRUD operations for wedding templates (create, read, update, delete)
+*   Multi-role UI: Admin sees all weddings & user list; User sees only their wedding editor
+*   Database schema definitions: `users` with `role`, `weddings` table
+*   Next.js App Router pages and API routes for weddings and auth
+*   UI components built with shadcn/ui and styled via Tailwind CSS v4
+*   Theming system with light/dark mode support (CSS variables)
+*   Docker setup for local PostgreSQL
+*   Input validation & error handling using Zod
+*   Basic unit tests for auth and wedding APIs
 
----
+**Out-of-Scope (Planned for Later Phases)**
+
+*   Rich-text or block-based content editor (e.g., TipTap integration)
+*   File upload (images/documents) and media management
+*   Payment gateway integration or subscription flows
+*   Email notifications (invitations, reminders)
+*   Analytics dashboard or reporting beyond basic metrics
+*   Multi-tenant support or white-label branding
+*   Mobile-specific native app or React Native support
 
 ## 3. User Flow
 
-A new visitor lands on the root URL and sees a welcome page with options to **Sign Up** or **Sign In**. If they choose Sign Up, they fill in their email, password, and hit “Create Account.” The form submits to `/api/auth/route.ts`, which hashes the password, creates a new user session or token, and redirects them to the dashboard. If any input is invalid, an inline error message explains the issue (e.g., “Password too short”).
+A new visitor arrives at the landing page and clicks **Sign Up**. They fill out email/password fields and submit; the system creates their account with a default `USER` role. After sign-up or sign-in, they are redirected to `/dashboard`. Here, the left sidebar shows personalized navigation: "My Wedding" and "Account Settings." The main area displays a form and data table for editing their wedding details—name, date, venue, and other fields. Changes are validated (via Zod), sent to `/api/weddings`, and saved in PostgreSQL, with success or error feedback.
 
-Once authenticated, the user is taken to the `/dashboard` route. Here they see a sidebar or header defined by `dashboard/layout.tsx`, and the main panel pulls in static data from `data.json`. They can log out (if that control is present), but otherwise their entire session is managed by server-side cookies or tokens. Returning users go directly to Sign In, submit credentials, and upon success they land back on `/dashboard`. Any unauthorized access to `/dashboard` redirects back to Sign In.
-
----
+An administrator logs in similarly but holds the `ADMIN` role. On `/dashboard`, the sidebar includes additional links: "Manage Weddings" and "User Management." Clicking "Manage Weddings" opens a data table listing all wedding templates with actions: Create, Edit, Delete. The admin can open a shadcn/ui modal form to add or update templates. Under "User Management," the admin views every user, their roles, and can update roles via a protected API endpoint. All sensitive routes are guarded by middleware that checks session validity and user role before rendering pages or responding to API calls.
 
 ## 4. Core Features
 
-- **Sign-Up Page (`/app/sign-up/page.tsx`)**: Form fields for email & password, client-side validation, POST to `/api/auth`.
-- **Sign-In Page (`/app/sign-in/page.tsx`)**: Form fields for email & password, client-side validation, POST to `/api/auth`.
-- **Authentication API (`/app/api/auth/route.ts`)**: Handles both registration and login based on HTTP method, integrates password hashing (bcrypt) and session or JWT logic.
-- **Global Layout (`/app/layout.tsx` + `globals.css`)**: Shared header, footer, and CSS resets across all pages.
-- **Dashboard Layout (`/app/dashboard/layout.tsx` + `dashboard/theme.css`)**: Sidebar or top nav for authenticated flows, section-specific styling.
-- **Dashboard Page (`/app/dashboard/page.tsx`)**: Reads `data.json`, renders it as cards or tables.
-- **Static Data Source (`/app/dashboard/data.json`)**: Example dataset to demo dynamic rendering.
-- **TypeScript Configuration**: `tsconfig.json` with strict mode and path aliases (if any).
-
----
+*   **Authentication & Authorization**: Sign-up/sign-in, session management, RBAC (role-based access control) with `ADMIN` & `USER` roles.
+*   **Multi-Role Dashboard**: Shared layout with conditional nav items and content based on user role.
+*   **Wedding Templates CRUD**: Next.js API routes (`/api/weddings`) for create/read/update/delete operations managed through Drizzle ORM.
+*   **Database Schema**: `users` table extended with `role` enum; new `weddings` table schema in `db/schema/weddings.ts`.
+*   **UI Components**: Reusable elements (`data-table.tsx`, `app-sidebar.tsx`, forms via shadcn/ui).
+*   **Theming & Styling**: Light/dark mode toggle, CSS-variable theming, Tailwind CSS utilities.
+*   **Form Validation**: Zod schemas for robust input validation on both client and server.
+*   **Docker Development Environment**: `docker-compose` for spinning up a local PostgreSQL instance.
+*   **Error Handling & Feedback**: Standardized JSON responses with clear success/error messages.
+*   **Basic Testing**: Unit tests for auth flows and wedding API endpoints.
 
 ## 5. Tech Stack & Tools
 
-- **Framework**: Next.js (App Router) for file-based routing, SSR/SSG, and API routes.
-- **Language**: TypeScript for type safety.
-- **UI Library**: React 18 for component-based UI.
-- **Styling**: Plain CSS via `globals.css` (global reset) and `theme.css` (sectional styling). Can easily migrate to CSS Modules or Tailwind in the future.
-- **Backend**: Node.js runtime provided by Next.js API routes.
-- **Password Hashing**: bcrypt (npm package).
-- **Session/JWT**: NextAuth.js or custom JWT logic (to be decided in implementation).
-- **IDE & Dev Tools**: VS Code with ESLint, Prettier extensions. Optionally, Cursor.ai for AI-assisted coding.
+**Frontend**
 
----
+*   Next.js (App Router) – React framework for SSR & file-based routing
+*   TypeScript – type safety on both client and server
+*   shadcn/ui – accessible, customizable React components
+*   Tailwind CSS v4 – utility-first styling
+
+**Backend**
+
+*   Next.js API Routes – Node.js serverless functions for CRUD endpoints
+*   PostgreSQL – relational database for storing users and weddings
+*   Drizzle ORM – type-safe database queries & migrations
+*   Better Auth – authentication library for sign-up/sign-in flows
+*   Zod – schema validation for request payloads
+
+**Dev & Ops**
+
+*   Docker & Docker Compose – containerize local Postgres
+*   ESLint & Prettier – code linting and formatting
+*   GitHub Actions (optional) – CI for tests and linting
 
 ## 6. Non-Functional Requirements
 
-- **Performance**: Initial page load under 200 ms on a standard broadband connection. API responses under 300 ms.
-- **Security**:
-  - HTTPS only in production.
-  - Proper CORS, CSRF protection for API routes.
-  - Secure password storage (bcrypt with salt).
-  - No credentials or secrets checked into version control.
-- **Scalability**: Structure must support adding database integration, caching layers, and advanced auth flows without rewiring core app.
-- **Usability**: Forms should give real-time feedback on invalid input. Layout must be responsive (mobile > 320 px).
-- **Maintainability**: Code must adhere to TypeScript strict mode. Linting & formatting enforced by ESLint/Prettier.
-
----
+*   **Performance**: Initial page load < 2s on 3G; API responds < 200 ms under normal load.
+*   **Security**: HTTPS enforced, secure cookies, CSRF/XSS protection, hashed passwords, role checks on all protected routes.
+*   **Reliability**: 99.9% uptime; retry logic on transient DB errors.
+*   **Scalability**: Able to handle hundreds of concurrent users; stateless API routes.
+*   **Usability & Accessibility**: WCAG AA compliance for core pages; responsive design for desktop and tablet.
+*   **Maintainability**: 80%+ unit test coverage; TypeScript strict mode; clear code comments.
 
 ## 7. Constraints & Assumptions
 
-- **No Database**: Dashboard uses only `data.json`; real database integration is deferred.
-- **Node Version**: Requires Node.js >= 14.
-- **Next.js Version**: Built on Next.js 13+ App Router.
-- **Authentication**: Assumes availability of bcrypt or NextAuth.js at implementation time.
-- **Hosting**: Targets serverless or Node.js-capable hosting (e.g., Vercel, Netlify).
-- **Browser Support**: Modern evergreen browsers; no IE11 support required.
-
----
+*   **Environment**: Node.js 18+, Docker installed, environment variables (`DATABASE_URL`, `AUTH_SECRET`) provided.
+*   **Dependencies**: Better Auth service availability; PostgreSQL version >= 14.
+*   **Assumptions**: Single-tenant application; no legacy data migration; email deliverability configured externally.
+*   **Third-Party Limits**: No hard rate limits, but avoid spamming auth endpoints.
 
 ## 8. Known Issues & Potential Pitfalls
 
-- **Static Data Limitation**: `data.json` is only for demo. A real API or database will be needed to avoid stale data.
-  *Mitigation*: Define a clear interface for data fetching so swapping to a live endpoint is trivial.
+*   **Role Enforcement Gaps**: Forgetting to apply middleware on new API routes. Mitigation: centralize role check logic in `middleware.ts`.
+*   **Schema Drift**: Drizzle migrations out of sync with code. Mitigation: adopt a strict migration workflow and run `drizzle-kit` on CI.
+*   **Validation Inconsistencies**: Duplicate validation logic on client/server. Mitigation: share Zod schemas across both.
+*   **Docker Networking**: Postgres container not reachable due to port conflicts. Mitigation: document default ports and allow overrides via `.env`.
+*   **Performance in Large Datasets**: Data table listing thousands of weddings. Mitigation: implement server-side pagination and indexing on key columns.
 
-- **Global CSS Conflicts**: Using global styles can lead to unintended overrides.
-  *Mitigation*: Plan to migrate to CSS Modules or utility-first CSS in Phase 2.
-
-- **API Route Ambiguity**: Single `/api/auth/route.ts` handling both sign-up and sign-in could get complex.
-  *Mitigation*: Clearly branch on HTTP method (`POST /register` vs. `POST /login`) or split into separate files.
-
-- **Lack of Testing**: No test suite means regressions can slip in.
-  *Mitigation*: Build a minimal Jest + React Testing Library setup in an early iteration.
-
-- **Error Handling Gaps**: Client and server must handle edge cases (network failures, malformed input).
-  *Mitigation*: Define a standard error response schema and show user-friendly messages.
-
----
-
-This PRD should serve as the single source of truth for the AI model or any developer generating the next set of technical documents: Tech Stack Doc, Frontend Guidelines, Backend Structure, App Flow, File Structure, and IDE Rules. It contains all functional and non-functional requirements with no ambiguity, enabling seamless downstream development.
+This PRD provides a clear, unambiguous blueprint for building the Wedding CMS Dashboard. Every element—from user flows and core features to tech choices and known pitfalls—is spelled out to guide subsequent technical documents without guesswork.
